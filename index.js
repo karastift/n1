@@ -56,13 +56,13 @@ function movingMain() {
 }
 
 function movingListener(userList) {
-    userGames = {};
+    let userGames = {};
     for (u = 0; u < userList.length; u++) {
-        var game = u.presence.game;
+        var game = userList[u].presence.game;
         game.name = game.name.toString();
-        userGames[u] = game.name;
+        userGames[u] = u.presence.game;
+        return userGames;
     }
-    return userGames;
 }
 
 function movingMover(userGames) {
@@ -77,7 +77,7 @@ function movingUsers(message) {
 }
 
 function test(message) { //funktioniert
-    let server = message.guild.id
+    let server = message.guild.id;
     const list = client.guilds.cache.get(server); 
     list.members.cache.forEach(member => console.log(member.user.id));
 }
