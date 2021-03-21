@@ -17,7 +17,7 @@ client.on('message', msg => {
     }
     
     else if (msg.content.includes('>clear')) {
-        clearChat(parseInt(msg.content.substring(6))); 
+        clearChat(parseInt(msg.content.substring(6)), msg); 
     }
 
     else if (msg.content == '>startMoving') {
@@ -58,11 +58,9 @@ function movingMain() {
 function movingListener(userList) {
     let userGames = {};
     for (u = 0; u < userList.length; u++) {
-        var game = userList[u].presence.game;
-        game.name = game.name.toString();
-        userGames[u] = u.presence.game;
-        return userGames;
+        userGames[userList[u]] = userList[u].presence.activities.find(activity => activity.type === 'Playing');
     }
+    return userGames;
 }
 
 function movingMover(userGames) {
@@ -71,15 +69,16 @@ function movingMover(userGames) {
 }
 
 function movingUsers(message) {
-    const list = client.guilds.cache.get("myServerID"); 
-    list.members.cache.forEach(member => console.log(member.user.username)); 
+    const server = message.guild.id;
+    const list = client.guilds.cache.get(server); 
+    let onlineMembers = [];
+    list.members.cache.forEach(member => onlineMembers.push(member.user));
     return onlineMembers;
 }
 
 function test(message) { //funktioniert
-    let server = message.guild.id;
-    const list = client.guilds.cache.get(server); 
-    list.members.cache.forEach(member => console.log(member.user.id));
+    //message.channel.send(JSON.stringify('Output: ' + movingListener(movingUsers(message))));
+    console.log(movingListener(movingUsers(message)));
 }
 
 client.login(token);
