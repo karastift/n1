@@ -1,3 +1,3 @@
 export type ServerStates = {
-    server: [string]
-}
+    server: [string?]
+};
