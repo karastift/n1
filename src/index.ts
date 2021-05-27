@@ -25,7 +25,7 @@ client.on('message', msg => {
         else {
             serverStates.server.push(msg.guild!.name);
         }
-        console.log(serverStates.server);
+
     }
 });
 

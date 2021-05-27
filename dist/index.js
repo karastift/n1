@@ -23,7 +23,6 @@ client.on('message', msg => {
         else {
             exports.serverStates.server.push(msg.guild.name);
         }
-        console.log(exports.serverStates.server);
     }
 });
 client.on('presenceUpdate', presence => {
