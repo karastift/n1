@@ -1,0 +1,10 @@
+{
+   "serverConfigurationObjects": [
+        {
+           "serverName": "BotTesting",
+           "config": {
+               "Visual Studio Code": "VisualStudioCode"
+           }
+        }
+   ] 
+}
