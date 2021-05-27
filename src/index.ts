@@ -34,7 +34,6 @@ client.on('presenceUpdate', presence => {
         const user = presence!.user;
         const activity = user!.presence.activities[0]?.name;
         const guild = presence!.guild;
-
         if (!user || !guild) return;
 
         const channel = getChannelByName(guild, activity);
