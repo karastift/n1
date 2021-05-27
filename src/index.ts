@@ -3,6 +3,7 @@ import { ServerStates } from "./types";
 import { token, prefix } from "./config.json";
 import { isActivated } from "./utils/isActivated";
 import { getChannelByName } from "./utils/getChannelByName";
+import { formatConfigToObject } from "./utils/formatConfigToObject";
 
 const client = new Client();
 export let serverStates: ServerStates = {
@@ -17,7 +18,7 @@ client.on('message', msg => {
    
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
 
-	const args = msg.content.slice(prefix.length).trim().split('/ +/');
+	const args = msg.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift()?.toLowerCase();
 
     if (command === 'moving') {
@@ -43,8 +44,10 @@ client.on('message', msg => {
             }
         }
         else if (args[0] === 'configure') {
-            const newConfig = args[1];
-            // continue configure method
+            const pattern = args[0];
+            const rawConfig = msg.content.slice(msg.content.indexOf(pattern) + pattern.length);
+            const newConfig = formatConfigToObject(rawConfig);
+            return msg.channel.send(JSON.stringify(newConfig));
         }
         console.log(serverStates.server);
         return msg.channel.send(`Are you sure that you typed \`${args[0]}\` right? I just cannot figure out what to do with this argument.`);

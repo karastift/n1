@@ -5,6 +5,7 @@ const discord_js_1 = require("discord.js");
 const config_json_1 = require("./config.json");
 const isActivated_1 = require("./utils/isActivated");
 const getChannelByName_1 = require("./utils/getChannelByName");
+const formatConfigToObject_1 = require("./utils/formatConfigToObject");
 const client = new discord_js_1.Client();
 exports.serverStates = {
     server: ['BotTesting'],
@@ -16,7 +17,7 @@ client.on('message', msg => {
     var _a;
     if (!msg.content.startsWith(config_json_1.prefix) || msg.author.bot)
         return;
-    const args = msg.content.slice(config_json_1.prefix.length).trim().split('/ +/');
+    const args = msg.content.slice(config_json_1.prefix.length).trim().split(' ');
     const command = (_a = args.shift()) === null || _a === void 0 ? void 0 : _a.toLowerCase();
     if (command === 'moving') {
         if (!args.length) {
@@ -41,7 +42,10 @@ client.on('message', msg => {
             }
         }
         else if (args[0] === 'configure') {
-            const newConfig = args[1];
+            const pattern = args[0];
+            const rawConfig = msg.content.slice(msg.content.indexOf(pattern) + pattern.length);
+            const newConfig = formatConfigToObject_1.formatConfigToObject(rawConfig);
+            return msg.channel.send(JSON.stringify(newConfig));
         }
         console.log(exports.serverStates.server);
         return msg.channel.send(`Are you sure that you typed \`${args[0]}\` right? I just cannot figure out what to do with this argument.`);
