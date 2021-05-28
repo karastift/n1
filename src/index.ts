@@ -9,7 +9,7 @@ import {
     stoppedMessage,
     wrongArgMessage,
     wrongCommandMessage
-} from "./messages";
+} from "./utils/messages";
 import { ServerStates } from "./types";
 import { convertMessage } from "./utils/convertMessage";
 import { formatConfigToObject } from "./utils/formatConfigToObject";
