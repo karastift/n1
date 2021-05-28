@@ -17,7 +17,7 @@ import {
 
 const client = new Client();
 export let serverStates: ServerStates = {
-    server: ['BotTesting'],
+    server: [],
 };
 
 const validToMove = (user: User | null, guild: Guild | null, newPresence: Presence | null) => {
@@ -32,7 +32,10 @@ const validToMove = (user: User | null, guild: Guild | null, newPresence: Presen
 
 client.on('ready', () => {    
     console.log(`Logged in as ${client.user!.tag}!`);
-    client.user?.setActivity(`Currently not moving any users.`);
+    client.user?.setActivity('Owned and developed by karastift', {
+        type: 'CUSTOM_STATUS',
+        url: 'https://github.com/karastift/',
+    });
 });
 
 client.on('message', msg => {
@@ -42,7 +45,6 @@ client.on('message', msg => {
 	const { command, args } = convertMessage(msg.content);
 
     if (command === 'moving') {
-        client.user?.setActivity(`Currently moving users on ${serverStates.server.length} servers.`);
 		if (!args.length) {
 			return msg.channel.send(noArgsMessage(msg.author));
 		}
@@ -84,7 +86,7 @@ client.on('presenceUpdate', presence => {
     if (isActivated(presence?.guild?.name)) {
         const user = presence!.user;
         const newPresence = user!.presence;
-        const activity = user!.presence.activities[0].name;
+        const activity = user!.presence.activities[0]?.name;
         const guild = presence!.guild;
 
         if (!validToMove(user, guild, newPresence)) return;
