@@ -1,5 +1,9 @@
 import { Client, Guild, Presence, User } from "discord.js";
 import { prefix, token } from "./config.json";
+import { ServerStates } from "./types";
+import { convertMessage } from "./utils/convertMessage";
+import { formatConfigToObject } from "./utils/formatConfigToObject";
+import { isActivated } from "./utils/isActivated";
 import {
     alreadyActiveMessage,
     alreadyStoppedMessage,
@@ -10,11 +14,6 @@ import {
     wrongArgMessage,
     wrongCommandMessage
 } from "./utils/messages";
-import { ServerStates } from "./types";
-import { convertMessage } from "./utils/convertMessage";
-import { formatConfigToObject } from "./utils/formatConfigToObject";
-import { getChannelByName } from "./utils/getChannelByName";
-import { isActivated } from "./utils/isActivated";
 
 const client = new Client();
 export let serverStates: ServerStates = {
@@ -32,7 +31,8 @@ const validToMove = (user: User | null, guild: Guild | null, newPresence: Presen
 }
 
 client.on('ready', () => {    
-    console.log(`Logged in as ${client.user!.tag}!`)
+    console.log(`Logged in as ${client.user!.tag}!`);
+    client.user?.setActivity(`Currently not moving any users.`);
 });
 
 client.on('message', msg => {
@@ -42,6 +42,7 @@ client.on('message', msg => {
 	const { command, args } = convertMessage(msg.content);
 
     if (command === 'moving') {
+        client.user?.setActivity(`Currently moving users on ${serverStates.server.length} servers.`);
 		if (!args.length) {
 			return msg.channel.send(noArgsMessage(msg.author));
 		}
@@ -63,6 +64,9 @@ client.on('message', msg => {
                 return msg.channel.send(stoppedMessage);
             }
         }
+        else if (args[0] === 'status') {
+            return msg.channel.send(isActivated(msg.guild!.name) ? 'I am active.' : 'I am not active.');
+        }
         else if (args[0] === 'configure') {
             return msg.channel.send(notDeveloped);
             const pattern = args[0];
@@ -80,12 +84,13 @@ client.on('presenceUpdate', presence => {
     if (isActivated(presence?.guild?.name)) {
         const user = presence!.user;
         const newPresence = user!.presence;
-        const activity = user!.presence.activities[0]?.name;
+        const activity = user!.presence.activities[0].name;
         const guild = presence!.guild;
 
-        if (validToMove(user, guild, newPresence)) return;
+        if (!validToMove(user, guild, newPresence)) return;
 
-        const channel = getChannelByName(guild!, activity);
+        const channel = guild?.channels.cache.find(channel => channel.name.toLowerCase() === activity.toLowerCase());
+        
         if (!channel) return;
 
         const member = guild?.member(user!);
